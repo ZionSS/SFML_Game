@@ -5,6 +5,7 @@ Platform::Platform(sf::Texture* texture, sf::Vector2f size, sf::Vector2f positio
 	body.setOrigin(size / 2.0f);
 	body.setTexture(texture);
 	body.setPosition(position);
+
 }
 Platform::~Platform()
 {

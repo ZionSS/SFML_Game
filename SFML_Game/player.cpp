@@ -1,93 +1,39 @@
 
 #include "Player.h"
 
-
-Player::Player(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, float speed) :
+Player::Player(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, float speed,sf::RenderWindow& window ) :
 	animation(texture, imageCount, switchTime)
 {
+	this->hp = 20.0f;
 	this->speed = speed;
 	row = 0;
 	faceRight = true;
 
-	body.setSize(sf::Vector2f(64.0f, 64.0f));
+	body.setSize(sf::Vector2f(30.0f, 38.0f));
 	body.setOrigin(body.getSize() / 2.0f);
-	body.setPosition(206.0f, 0.0f);
+	body.setPosition(206.0f,206.0f);
 	body.setTexture(texture);
 }
-PlayerHead::PlayerHead(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, float speed) :
-	animation(texture, imageCount, switchTime)
-{
-	this->speed = speed;
-	row = 0;
-	faceRight = true;
 
-	body.setSize(sf::Vector2f(64.0f, 64.0f));
-	body.setOrigin(body.getSize() / 2.0f);
-	body.setPosition(206.0f, -22.5f);
-	body.setTexture(texture);
-}
 Player::~Player()
 {
 }
-PlayerHead::~PlayerHead()
+
+void Player::setHp(float dmg)
 {
+	this->hp -= dmg;
 }
 
-void PlayerHead::Update1(float deltaTime)
+void Player::reHp()
 {
-	
-	velocity.x *= 0.0f;
-	velocity.y *= 0.0f;
-	if (row == 6) {
-		row = 2;
-	}
-	if (row == 4) {
-		row = 0;
-	}
-	if (row == 5) {
-		row = 1;
-	}
-	if (row == 7) {
-		row = 3;
-	}
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-		{
-			velocity.x -= speed;
-		}
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-		{
-			velocity.x += speed;
-		}
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
-		{
-			velocity.y -= speed;
-		}
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-		{
-			velocity.y += speed;
-		}
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-		{
-			row = 6;
-		}
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-		{
-			row = 5;
-		}
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
-		{
-			row = 7;
-		}
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
-		{
-			row = 4;
-		}
-
-		
-	animation.Update(row, deltaTime,faceRight);
-	body.setTextureRect(animation.uvRect);
-	body.move(velocity * deltaTime);
+	this->hp = 20.0f;
 }
+
+void Player::setPosition(sf::Vector2f position)
+{
+	body.setPosition(position);
+}
+
 void Player::Update(float deltaTime)
 {
 	velocity.x *= 0.0f;
@@ -97,6 +43,9 @@ void Player::Update(float deltaTime)
 	}
 	if (row == 3) {
 		row = 2;
+	}
+	if (row == 5) {
+		row = 4;
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 	{
@@ -119,7 +68,7 @@ void Player::Update(float deltaTime)
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
 	{
 		velocity.y -= speed;
-		row = 1;
+		row = 5;
 		if (velocity.y > 0.0f)
 			faceRight = true;
 		else
@@ -137,13 +86,15 @@ void Player::Update(float deltaTime)
 	animation.Update(row, deltaTime, faceRight);
 	body.setTextureRect(animation.uvRect);
 	body.move(velocity * deltaTime);
+	
 }
 
 void Player::Draw(sf::RenderWindow& window)
 {
 	window.draw(body);
 }
-void PlayerHead::Draw1(sf::RenderWindow& window)
+
+void Player::OnCollision(sf::Vector2f direction)
 {
-	window.draw(body);
 }
+
