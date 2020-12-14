@@ -30,6 +30,15 @@ void Bullet::getMove()
 {
 	 shape.move(curveVelocity);
 }
+void Bullet::statDmgUp()
+{
+	this->dmg *= 1.5;
+}
+void Bullet::statDmgDown()
+{
+	this->dmg /= 0.1;
+	
+}
 void Bullet::Draw(sf::RenderWindow& window)
 {
 	window.draw(shape);

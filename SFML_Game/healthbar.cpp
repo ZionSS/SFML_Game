@@ -3,7 +3,7 @@
 healthbar::healthbar(sf::Texture* texture, sf::Vector2u imageCount, float switchTime,float hp) :
 	animation(texture,imageCount,switchTime)
 {
-	hitCount = 3;
+	hitCount = 2;
 	body.setSize(sf::Vector2f(40.0f , 32.5f));
 	body.setOrigin(body.getSize() / 2.0f);
 	body.setPosition(sf::Vector2f(32.0f, 32.0f));

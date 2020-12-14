@@ -48,6 +48,7 @@ void Menu::Draw(sf::RenderWindow& window)
 
 void Menu::getItem(sf::Vector2f mousePosition)
 {
+	this->selectedItem = 9;
 	for (int i = 0; i < MAX_ITEMS; i++)
 	{
 		if (menu[i].getGlobalBounds().contains(sf::Vector2f(mousePosition)))
@@ -59,6 +60,7 @@ void Menu::getItem(sf::Vector2f mousePosition)
 		{
 			menu[i].setFillColor(sf::Color::White);
 		}
+		
 	}
 }
 

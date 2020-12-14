@@ -53,6 +53,7 @@ void Enemy::enemyUpdate(float deltaTime, sf::Vector2f playerPosition)
 		row = 2;
 		faceRight = false;
 	}
+	speed = 2.0f;
 	moveDirection = playerPosition - body.getPosition();
 	moveDirectionNorm = moveDirection/sqrt(pow(moveDirection.x, 2) + pow(moveDirection.y, 2));
 	animation.Update(row, deltaTime, faceRight);

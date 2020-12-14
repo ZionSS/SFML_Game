@@ -1,5 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include<iostream>
 #include "Animation.h"
 #include "Collider.h"
 #include "Math.h"
@@ -11,6 +12,8 @@ public:
 	void Update(float deltaTime,sf::Vector2f position, sf::Vector2f size,sf::Vector2i mousePostion);
 	void getMove();
 	float getDmg() { return dmg; }
+	void statDmgUp();
+	void statDmgDown();
 	void Draw(sf::RenderWindow& window);
 	sf::Vector2f GetPosition() { return	shape.getPosition(); }
 	Collider GetCollider() { return Collider(shape); }

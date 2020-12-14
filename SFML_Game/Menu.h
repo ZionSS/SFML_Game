@@ -13,7 +13,7 @@ public:
 	void MoveUp();
 	void MoveDown();
 private:
-	int selectedItem=0;
+	int selectedItem=9;
 	sf::Font font;
 	sf::Text menu[MAX_ITEMS];
 };
