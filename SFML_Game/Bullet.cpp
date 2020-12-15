@@ -5,7 +5,7 @@ Bullet::Bullet(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, 
 {
 	this->dmg = 50;
 	this->speed = speed;
-	maxSpeed = 10.0f;
+	maxSpeed = 5.0f;
 	shape.setSize(sf::Vector2f(10.0f, 10.0f));
 	shape.setOrigin(shape.getSize() / 2.0f);
 	shape.setTexture(texture);
@@ -32,11 +32,11 @@ void Bullet::getMove()
 }
 void Bullet::statDmgUp()
 {
-	this->dmg *= 1.5;
+	this->dmg += 25.0f;
 }
 void Bullet::statDmgDown()
 {
-	this->dmg /= 0.1;
+	this->dmg *= 0.97;
 	
 }
 void Bullet::Draw(sf::RenderWindow& window)

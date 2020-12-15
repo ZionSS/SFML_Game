@@ -25,9 +25,16 @@ Menu::Menu(float width, float height)
 	menu[2].setFont(font);
 	menu[2].setCharacterSize(52);
 	menu[2].setFillColor(sf::Color::White);
-	menu[2].setString("Exit");
-	menu[2].setOrigin(0, menu[2].getLocalBounds().height / 2);
-	menu[2].setPosition(sf::Vector2f(width *1/10, height *8/10));
+	menu[2].setString("How to play");
+	menu[2].setOrigin(0, menu[1].getLocalBounds().height / 2);
+	menu[2].setPosition(sf::Vector2f(width * 1 / 10, height * 8 / 10));
+
+	menu[3].setFont(font);
+	menu[3].setCharacterSize(52);
+	menu[3].setFillColor(sf::Color::White);
+	menu[3].setString("Exit");
+	menu[3].setOrigin(0, menu[2].getLocalBounds().height / 2);
+	menu[3].setPosition(sf::Vector2f(width *1/10, height *9/10));
 
 
 
@@ -64,9 +71,3 @@ void Menu::getItem(sf::Vector2f mousePosition)
 	}
 }
 
-
-
-void Menu::MoveUp()
-{
-
-}

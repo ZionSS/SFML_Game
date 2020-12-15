@@ -14,15 +14,18 @@ public:
 	float getHp() { return hp; }
 	float getDmg() { return dmg; }
 	void Draw(sf::RenderWindow &window);
+	void getDifficult(float difficult);
 	void enemyUpdate(float deltaTime,sf::Vector2f playerPosition);
 	sf::Vector2f GetPosition() { return	body.getPosition(); }
 	Collider GetCollider() { return Collider(hitbox); }
 private:
 	unsigned int row;
 	float hp;
+	int rate = 1;
 	sf::RectangleShape body;
 	sf::RectangleShape hitbox;
 	float speed;
+	float difficult;
 	Animation animation;
 	bool faceRight;
 	float dmg;

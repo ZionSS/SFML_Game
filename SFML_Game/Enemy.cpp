@@ -2,9 +2,8 @@
 
 Enemy::Enemy(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, float speed ): 
 	animation(texture, imageCount, switchTime) {
-	this->hp = 150.0f;
+	this->hp = 150;
 	this->speed = speed;
-	this->dmg = 1.0f;
 	row = 0;
 	faceRight = true;
 
@@ -53,7 +52,6 @@ void Enemy::enemyUpdate(float deltaTime, sf::Vector2f playerPosition)
 		row = 2;
 		faceRight = false;
 	}
-	speed = 2.0f;
 	moveDirection = playerPosition - body.getPosition();
 	moveDirectionNorm = moveDirection/sqrt(pow(moveDirection.x, 2) + pow(moveDirection.y, 2));
 	animation.Update(row, deltaTime, faceRight);
@@ -66,4 +64,18 @@ void Enemy::Draw(sf::RenderWindow &window)
 {
 	window.draw(body);
 	window.draw(hitbox);
+}
+
+void Enemy::getDifficult(float difficult)
+{
+	if (difficult / 60> rate)
+	{
+		rate++;
+	}
+	hp = 150 * rate * 0.5;
+	
+		speed = 0.25 * rate;
+	if(speed>2)
+		speed = 1.75;
+
 }

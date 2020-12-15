@@ -1,6 +1,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
+#include<SFML/Audio.hpp>
 #include <SFML/Window.hpp>
 #include<iostream>
 #include<vector>
@@ -15,8 +16,9 @@
 #include "healthbar.h"
 #include "Item.h"
 #include "Textbox.h"
+#include"Button.h"
 bool randomItemSpwanRate(int dropRate);
-void showHighScore(int x, int y, std::string word, sf::RenderWindow& window, sf::Font* font);
+void showHighScore(int x, int y, std::string word, sf::RenderWindow& window, sf::Font* font, int size);
 
 static const float View_HEIGHT = 720.0f;
 sf::Vector2f viewSize(936, 624);
@@ -77,7 +79,7 @@ void setWalls()
 int main()
 {
 	sf::RenderWindow window(sf::VideoMode(936, 624), "Howling Abyss", sf::Style::Titlebar | sf::Style::Close);
-	window.setFramerateLimit(30);
+	window.setFramerateLimit(60);
 	srand(time(NULL));
 	sf::Font font;
 	font.loadFromFile("upheavtt.ttf");
@@ -91,7 +93,7 @@ int main()
 	playerScore[5] = -99;
 	name[5] = "-";
 
-	scoreFile = fopen("Score.txt","r");
+	scoreFile = fopen("./Score.txt","r");
 	for(int i =0;i<5;i++)
 	{
 		fscanf(scoreFile, "%s", &playerName);
@@ -103,7 +105,7 @@ int main()
 	sort(userScore.begin(), userScore.end());
 	fclose(scoreFile);
 
-	fopen("Score.txt", "w");
+	fopen("./Score.txt", "w");
 	for (size_t i = 5; i >= 1; i--)
 	{
 		strcpy(playerName, userScore[i].second.c_str());
@@ -112,6 +114,7 @@ int main()
 	fclose(scoreFile);
 
 	sf::RectangleShape mouseCursor;
+	sf::RectangleShape pauseBG;
 	sf::Vector2f playerCenter;
 	sf::Vector2i mousePositionWindow;
 	sf::Vector2f aimDirection;
@@ -126,15 +129,31 @@ int main()
 	sf::Texture pic;
 	sf::Texture lost;
 	sf::Texture isacTexture;
+	sf::Texture grayBG;
+	sf::Texture howto;
+	sf::Texture leaderBoardAni;
+	sf::Texture hush;
+	sf::Texture bone;
+	sf::Texture map02;
+	sf::Texture map03;
+	sf::Texture map04;
+	map02.loadFromFile("./Resource/Map/Map02.png");
+	map03.loadFromFile("./Resource/Map/Map03.png");
+	map04.loadFromFile("./Resource/Map/Map04.png");
 	isacTexture.loadFromFile("./Resource/Player/IsaacPlayer.png");
 	map.loadFromFile("./Resource/Map/Map01.png");
 	lost.loadFromFile("./Resource/gfx/playerportraitbig_12_thelost.png");
 	pic.loadFromFile("./Resource/gfx/playerportraitbig_01_isaac.png");
 	lightFX.loadFromFile("./Resource/gfx/the_marshall_light.png");
-	menuBG.loadFromFile("./Resource/Map/MenuBG.jpg");
+	menuBG.loadFromFile("./Resource/Map/MenuBG.png");
 	hpbar.loadFromFile("./Resource/Item/hearts.png");
 	enemy01.loadFromFile("./Resource/Enemy/Wizob.png");
 	tearIsaac.loadFromFile("./Resource/Tear/Tear0.png");
+	grayBG.loadFromFile("./Resource/gfx/Untitled-1.png");
+	howto.loadFromFile("./Resource/gfx/howtoplay.png");
+	leaderBoardAni.loadFromFile("./Resource/gfx/PlayerPortraitBig_Keeper.png");
+	hush.loadFromFile("./Resource/gfx/playerportraitbig_06_bluebaby.png");
+	bone.loadFromFile("./Resource/gfx/playerportraitbig_16_theforgotten.png");
 	//Item//
 	sf::Texture item01;
 	sf::Texture item02;
@@ -176,59 +195,74 @@ int main()
 	Item ZW(&item12);
 
 	std::vector<Item> ASitem;
-	ASitem.push_back(Item(AS));
+	//ASitem.push_back(Item(AS));
 	std::vector<Item> Dmgitem;
-	Dmgitem.push_back(Item(Dmg));
+	//Dmgitem.push_back(Item(Dmg));
 	std::vector<Item> HBitem;
-	HBitem.push_back(Item(HB));
+	//HBitem.push_back(Item(HB));
 	std::vector<Item> HDitem;
-	HDitem.push_back(Item(HD));
+	//HDitem.push_back(Item(HD));
 	std::vector<Item> Ranitem;
-	Ranitem.push_back(Item(Ran));
+	//Ranitem.push_back(Item(Ran));
 	std::vector<Item> RWitem;
-	RWitem.push_back(Item(RW));
+	//RWitem.push_back(Item(RW));
 	std::vector<Item> SPitem;
-	SPitem.push_back(Item(SP));
+	//SPitem.push_back(Item(SP));
 	std::vector<Item> SCitem;
-	SCitem.push_back(Item(SC));
+	//SCitem.push_back(Item(SC));
 	std::vector<Item> SHitem;
-	SHitem.push_back(Item(SH));
+	//SHitem.push_back(Item(SH));
 	std::vector<Item> SSBitem;
-	SSBitem.push_back(Item(SSB));
+	//SSBitem.push_back(Item(SSB));
 	std::vector<Item> TSitem;
-	TSitem.push_back(Item(TS));
+	//TSitem.push_back(Item(TS));
 	std::vector<Item> ZWitem;
-	ZWitem.push_back(Item(ZW));
+	//ZWitem.push_back(Item(ZW));
 	///////////////////////
 	sf::RectangleShape theLost(sf::Vector2f(100.0f, 100.0f));
 	sf::RectangleShape xiaO(sf::Vector2f(100.0f, 100.0f));
+	sf::RectangleShape keeper(sf::Vector2f(100.0f, 100.0f));
+	sf::RectangleShape hushh(sf::Vector2f(100.0f, 100.0f));
 	sf::RectangleShape menuBackground(sf::Vector2f(936, 624));
 	sf::RectangleShape lightfx(sf::Vector2f(96*1.5, 256*1.5));
+	sf::RectangleShape forgotten(sf::Vector2f(150.0f, 150.0f));
 	sf::RectangleShape map01(sf::Vector2f(936, 624));
+	sf::RectangleShape Map02(sf::Vector2f(936, 624));
+	sf::RectangleShape Map03(sf::Vector2f(936, 624));
+	sf::RectangleShape Map04(sf::Vector2f(936, 624));
 	sf::RectangleShape frame(sf::Vector2f(1080.0f, 1000.0f));
+	sf::RectangleShape howtoplay(sf::Vector2f(window.getSize().x,window.getSize().y));
 	sf::View view(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(View_HEIGHT, View_HEIGHT));
 
-	Bullet tear(&tearIsaac, sf::Vector2u(1, 1), 3.0f, 100.0f);
+	Bullet tear(&tearIsaac, sf::Vector2u(1, 1), 3.0f, 1.0f);
 	Enemy Wizob(&enemy01, sf::Vector2u(4, 3), 0.25f, 0.5f);
 	healthbar health(&hpbar, sf::Vector2u(1, 3), 3.0f, 200.0f);
 	Menu menu(window.getSize().x, window.getSize().y);
 	Player playerBody(&isacTexture, sf::Vector2u(9, 6), 0.1f, 100.0f, window);
-	Textbox nameInput(15, sf::Color::White, false);
-
+	Textbox nameInput(32, sf::Color::White, false);
+	Button pauseButton(&font,32,window.getSize().x,window.getSize().y);
+	
 	std::vector<Bullet> bullets;
 	std::vector<Enemy> wizobGroub;
 	std::vector<healthbar> HP;
 
 	bullets.push_back(Bullet(tear));
-	wizobGroub.push_back(Enemy(Wizob));
+	//wizobGroub.push_back(Enemy(Wizob));
 	for (int i = 0; i < 3; i++)
 		HP.push_back(healthbar(health));
 
+	forgotten.setTexture(&bone);
+	hushh.setTexture(&hush);
+	keeper.setTexture(&leaderBoardAni);
+	howtoplay.setTexture(&howto);
 	theLost.setTexture(&lost);
 	xiaO.setTexture(&pic);
 	menuBackground.setTexture(&menuBG);
 	lightfx.setTexture(&lightFX);
 	map01.setTexture(&map);
+	Map02.setTexture(&map02);
+	Map03.setTexture(&map03);
+	Map04.setTexture(&map04);
 
 	wall.setFillColor(sf::Color::Red);
 	wall.setSize(sf::Vector2f(24.0f, 24.0f));
@@ -248,16 +282,20 @@ int main()
 	sf::Clock shootClock;
 	sf::Clock wizobSpawnCounter;
 	sf::Clock dmgCheck;
-	
+	sf::Clock difficulty;
+
 	int gameState = 0;
 	bool checkDmg = false;
 	int score = 0;
 	float spawnTime;
+	float difficultyRate;
 	float shootDelay = 0.0f;
 	float deltaTime = 0.0f;
 	float attackSpeed = 1.0f;
 	int k = HP.size() - 1;
 	int timing;
+	int roomSummonState=0;
+	int musicState = 0 ;
 	int itemCount01 = ASitem.size() - 1;
 	int itemCount02 = Dmgitem.size() - 1;
 	int itemCount03 = HBitem.size() - 1;
@@ -275,6 +313,85 @@ int main()
 	itemCount08++;
 	itemCount09++;
 	itemCount10++;
+
+	sf::Text scoreDisplay;
+	scoreDisplay.setFont(font);
+	scoreDisplay.setCharacterSize(32);
+	scoreDisplay.setString("Score : ");
+	scoreDisplay.setPosition(40, 60);
+
+	sf::Text scoreText;
+	scoreText.setFont(font);
+	scoreText.setCharacterSize(32);
+	scoreText.setString(std::to_string(score));
+	scoreText.setPosition(160, 60);
+
+	sf::Text difficultText;
+	difficultText.setFont(font);
+	difficultText.setCharacterSize(32);
+	difficultText.setString("Difficulty : ");
+	difficultText.setPosition(40, 90);
+
+	sf::Text difficultRateText;
+	difficultRateText.setFont(font);
+	difficultRateText.setCharacterSize(32);
+	difficultRateText.setPosition(260, 90);
+
+	sf::Text pausemenu;
+	pausemenu.setFont(font);
+	pausemenu.setCharacterSize(64);
+	pausemenu.setString("PAUSE");
+	pausemenu.setPosition(sf::Vector2f(window.getSize().x/2, window.getSize().y/3));
+	pausemenu.setOrigin(pausemenu.getLocalBounds().width / 2, pausemenu.getLocalBounds().height);
+
+	pauseBG.setTexture(&grayBG);
+	pauseBG.setSize(sf::Vector2f(window.getSize().x, window.getSize().y));
+
+	sf::Music titlemusic;
+	titlemusic.openFromFile("./Resource/sfx/title screen.ogg");
+	titlemusic.setLoop(true);
+	titlemusic.setVolume(15.0f);
+
+	sf::Music gamemusic;
+	gamemusic.openFromFile("./Resource/sfx/the womb chapter four.ogg");
+	gamemusic.setLoop(true);
+	gamemusic.setVolume(15.0f);
+
+	sf::SoundBuffer hurtsfx;
+	hurtsfx.loadFromFile("./Resource/sfx/baby hurt 1.wav");
+	sf::Sound hurt;
+	hurt.setBuffer(hurtsfx);
+	hurt.setVolume(15.0f);
+
+	sf::SoundBuffer diesfx;
+	diesfx.loadFromFile("./Resource/sfx/isaac dies new 1.wav");
+	sf::Sound die;
+	die.setBuffer(diesfx);
+	die.setVolume(15.0f);
+
+	sf::SoundBuffer wizobroar;
+	wizobroar.loadFromFile("./Resource/sfx/ghost shoot 2.wav");
+	sf::Sound roar;
+	roar.setBuffer(wizobroar);
+	roar.setVolume(10.0f);
+
+	sf::SoundBuffer ghostdie;
+	ghostdie.loadFromFile("./Resource/sfx/ghost roar.wav");
+	sf::Sound ghostsfx;
+	ghostsfx.setBuffer(ghostdie);
+	ghostsfx.setVolume(10.0f);
+
+	sf::SoundBuffer tearSfx;
+	tearSfx.loadFromFile("./Resource/sfx/tear fire 4.wav");
+	sf::Sound tearsfx;
+	tearsfx.setBuffer(tearSfx);
+	tearsfx.setVolume(15.0f);
+
+	sf::SoundBuffer summonSfx;
+	summonSfx.loadFromFile("./Resource/sfx/summonsound.wav");
+	sf::Sound summon;
+	summon.setBuffer(summonSfx);
+	summon.setVolume(15.0f);
 
 	while (window.isOpen())
 	{
@@ -295,6 +412,13 @@ int main()
 		}
 		if (gameState == 0)
 		{
+			if (musicState == 0)
+			{
+				gamemusic.stop();
+				titlemusic.play();
+				musicState++;
+			}
+			
 			menu.getItem(sf::Vector2f(sf::Mouse::getPosition(window)));
 			if (menu.getState() == 0 && sf::Mouse::isButtonPressed(sf::Mouse::Left))
 			{
@@ -306,14 +430,22 @@ int main()
 			}
 			else if (menu.getState() == 2 && sf::Mouse::isButtonPressed(sf::Mouse::Left))
 			{
-				window.close();
+				gameState = 5;
 			}
+			else if (menu.getState() == 3 && sf::Mouse::isButtonPressed(sf::Mouse::Left))
+			{
+				window.close();
+				return 0;
+			}
+			
 			lightfx.setPosition(sf::Vector2f(85.0f, 0.0f));
 			xiaO.setPosition(sf::Vector2f(110.0f, 235.0f));
 			theLost.setPosition(sf::Vector2f(110.0f, 205.0f));
+			keeper.setPosition(sf::Vector2f(110.0f, 235.0f));
+			hushh.setPosition(sf::Vector2f(110.0f, 235.0f));
 			window.clear();
 			window.draw(menuBackground);
-			if(rand()%50!=0&& menu.getState() != 0)
+			if(rand()%50!=0&& menu.getState() != 0&& menu.getState() != 1 && menu.getState() != 2 && menu.getState() != 3)
 			{ 
 				
 				window.draw(xiaO);
@@ -328,6 +460,32 @@ int main()
 				}
 				
 			}
+			if (menu.getState() == 1)
+			{
+				if (rand() % 10 != 0)
+				{
+					window.draw(keeper);
+					window.draw(lightfx);
+				}
+
+			}
+			if (menu.getState() == 2)
+			{
+				if (rand() % 10 != 0)
+				{
+					window.draw(hushh);
+					window.draw(lightfx);
+				}
+
+			}
+			if (menu.getState() == 3)
+			{
+				if (rand() % 10 != 0)
+				{
+					window.draw(lightfx);
+				}
+
+			}
 			menu.Draw(window);
 			window.display();
 		}
@@ -339,13 +497,29 @@ int main()
 				nameInput.setSelected(false);
 				gameState = 2;
 			}
+			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
+			{
+				nameInput.setSelected(false);
+				gameState = 0;
+			}
+			
+			nameInput.setPosition(sf::Vector2f(20, window.getSize().y*1/3+32));
 			window.clear();
 			window.draw(menuBackground);
+			showHighScore(110, window.getSize().y * 1 / 3, "Input Name", window, &font, 32);
 			nameInput.drawTo(window);
 			window.display();
 		}
 		if (gameState == 2)
 		{
+			if (musicState == 1)
+			{
+				gamemusic.play();
+				titlemusic.stop();
+				musicState++;
+			}
+			
+			difficultyRate = difficulty.getElapsedTime().asSeconds();
 			deltaTime = clock.restart().asSeconds();
 			shootDelay = shootClock.getElapsedTime().asSeconds();
 			spawnTime = wizobSpawnCounter.getElapsedTime().asSeconds();
@@ -358,7 +532,9 @@ int main()
 				bullets.push_back(Bullet(tear));
 				shootDelay = shootClock.restart().asSeconds();
 			}
-		if (spawnTime > 5)
+			int spawnRate = 5 - difficultyRate/120;
+			if (spawnRate < 1) spawnRate = 1;
+		if (spawnTime > spawnRate)
 		{
 			switch (rand() % 4)
 			{
@@ -373,8 +549,10 @@ int main()
 			default:
 				break;
 			}
-
+			roar.play();
 			spawnTime = wizobSpawnCounter.restart().asSeconds();
+			Wizob.getDifficult(difficultyRate);
+			if(wizobGroub.size()<=5)
 			wizobGroub.push_back(Enemy(Wizob));
 		}
 		for (size_t i = 0; i < bullets.size(); i++)
@@ -383,10 +561,16 @@ int main()
 		}
 		for (size_t i = 0; i < wizobGroub.size(); i++)
 		{
+			
 			if (wizobGroub[i].GetCollider().CheckCollision(isaacBodyCollision, 1.0f))
 			{
+				
 				if(!checkDmg)
 				{
+					if (k != 0 && HP[0].getHitCount() != 1)
+						hurt.play();
+					else
+						die.play();
 					HP[k].setHealth(false);
 					checkDmg = true;
 				}
@@ -397,86 +581,94 @@ int main()
 						k--;
 					}
 				}
-				
+
 			}
-			Collider wizobCollider = wizobGroub[i].GetCollider();
+			Collider wizobCollider = wizobGroub[i].GetCollider();			
 			for (size_t k = 0; k < bullets.size(); k++)
 			{
 				if (bullets[k].GetCollider().CheckCollision(wizobCollider, 0.0f))
 				{
+					tearsfx.play();
 					wizobGroub[i].setHp(bullets[k].getDmg());
 					bullets.erase(bullets.begin() + k);
+					
 				}
 			}
 			if (wizobGroub[i].getHp() <= 0)
 			{
-				/*if (HP[k].getHitCount() == 2)
-				{
-					if (k != HP.size() - 1)
-						k++;
-				}
-				HP[k].setHealth(true);
-				std::cout << k;*/
-				
 					switch (rand()%11)
 					{
 					case 1:ASitem.push_back(Item(AS));
 						ASitem[itemCount01].Update(deltaTime, wizobGroub[i].GetPosition());
 						itemCount01++;
 						break;
-					case 2:Dmgitem.push_back(Item(Dmg));
+					case 2:if (rand() % 5 == 0)
+					{
+						Dmgitem.push_back(Item(Dmg));
 						Dmgitem[itemCount02].Update(deltaTime, wizobGroub[i].GetPosition());
 						itemCount02++;
+
+					}
 						break;
-					case 3:HBitem.push_back(Item(HB));
+					case 3:if (rand() % 3 == 0)
+					{ 
+
+						HBitem.push_back(Item(HB));
 						HBitem[itemCount03].Update(deltaTime, wizobGroub[i].GetPosition());
 						itemCount03++;
+					}
 						break;
 					case 5:Ranitem.push_back(Item(Ran));
 						Ranitem[itemCount05].Update(deltaTime, wizobGroub[i].GetPosition());
 						itemCount05++;
 						break;
-					case 7:SPitem.push_back(Item(SP));
+					case 7:if(rand()%2==0)
+					{
+						SPitem.push_back(Item(SP));
 						SPitem[itemCount07].Update(deltaTime, wizobGroub[i].GetPosition());
 						itemCount07++;
-						break;
+						
+					}break;
+						
 					case 8:SCitem.push_back(Item(SC));
 						SCitem[itemCount08].Update(deltaTime, wizobGroub[i].GetPosition());
 						itemCount08++;
 						break;
-					case 9:SHitem.push_back(Item(SH));
-						SHitem[itemCount09].Update(deltaTime, wizobGroub[i].GetPosition());
-						itemCount09++;
-						break;
-					case 10:SSBitem.push_back(Item(SSB));
+					case 10:if (rand() % 5 == 0)
+					{
+						SSBitem.push_back(Item(SSB));
 						SSBitem[itemCount10].Update(deltaTime, wizobGroub[i].GetPosition());
 						itemCount10++;
-						break;
-					default:
-						break;
 					}
+						break;
+					/*default:
+						break;*/
+					}
+					ghostsfx.play();
 				score += 10;
-				wizobGroub.erase(wizobGroub.begin() + i);
+				if (!wizobGroub.empty()) {
+					wizobGroub.erase(wizobGroub.begin() + i);
+				}
 			}
 		}
-		std::cout << tear.getDmg() << std::endl;
-		for (size_t i = 0; i < ASitem.size(); i++)
+		for (size_t i = 0; i < ASitem.size(); i++)  
 		{
 			if (ASitem[i].GetCollider().CheckCollision(isaacBodyCollision, 0.0f))
 			{
 				ASitem.erase(ASitem.begin() + i);
 				itemCount01--;
+				if(attackSpeed>0.25f)
 				attackSpeed -= 0.05f;
-				break;
+				continue;
 			}
 			Collider asItemCollider = ASitem[i].GetCollider();
 			for (int k = 0; k < walls.size(); k++)
 			{
 				if (walls[k].GetCollider().CheckCollision(asItemCollider, 0.0f))
 				{
-					ASitem.erase(ASitem.begin() + i);
-					itemCount01--;
-					break;
+						ASitem.erase(ASitem.begin() + i);
+						itemCount01--;
+						break;
 				}
 			}
 		}
@@ -487,16 +679,16 @@ int main()
 				Dmgitem.erase(Dmgitem.begin() + i);
 				itemCount02--;
 				tear.statDmgUp();
-				break;
+				continue;
 			}
 			Collider dmgItemCollider = Dmgitem[i].GetCollider();
 			for (int k = 0; k < walls.size(); k++)
 			{
 				if (walls[k].GetCollider().CheckCollision(dmgItemCollider, 0.0f))
 				{
-					Dmgitem.erase(Dmgitem.begin() + i);
-					itemCount02--;
-					break;
+						Dmgitem.erase(Dmgitem.begin() + i);
+						itemCount02--;
+						break;
 				}
 			}
 		}
@@ -514,16 +706,16 @@ int main()
 					}
 				}
 				HP[k].setHealth(true);
-				break;
+				continue;
 			}
 			Collider hbItemCollider = HBitem[i].GetCollider();
 			for (int k = 0; k < walls.size(); k++)
 			{
 				if (walls[k].GetCollider().CheckCollision(hbItemCollider, 0.0f))
 				{
-					HBitem.erase(HBitem.begin() + i);
-					itemCount03--;
-					break;
+						HBitem.erase(HBitem.begin() + i);
+						itemCount03--;
+						break;
 				}
 			}
 		}
@@ -533,8 +725,7 @@ int main()
 			{
 				Ranitem.erase(Ranitem.begin() + i);
 				itemCount05--;
-				
-				switch (rand()%5)
+				switch (rand()%8)
 				{
 				case 0:
 					if (HP[k].getHitCount() == 2)
@@ -565,19 +756,23 @@ int main()
 					break;
 				case 5:tear.statDmgDown();
 					break;
+				case 6:
+					if(rand()%7)
+					wizobGroub.erase(wizobGroub.begin(), wizobGroub.end());
+					break;
 				default:
 					break;
 				}
-				break;
+				continue;
 			}
 			Collider ranItemCollider = Ranitem[i].GetCollider();
 			for (int k = 0; k < walls.size(); k++)
 			{
 				if (walls[k].GetCollider().CheckCollision(ranItemCollider, 0.0f))
 				{
-					Ranitem.erase(Ranitem.begin() + i);
-					itemCount05--;
-					break;
+						Ranitem.erase(Ranitem.begin() + i);
+						itemCount05--;
+						break;
 				}
 			}
 		}
@@ -588,16 +783,16 @@ int main()
 				SPitem.erase(SPitem.begin() + i);
 				itemCount07--;
 				score += 20;
-				break;
+				continue;
 			}
 			Collider spItemCollider = SPitem[i].GetCollider();
 			for (int k = 0; k < walls.size(); k++)
 			{
 				if (walls[k].GetCollider().CheckCollision(spItemCollider, 0.0f))
 				{
-					SPitem.erase(SPitem.begin() + i);
-					itemCount07--;
-					break;
+						SPitem.erase(SPitem.begin() + i);
+						itemCount07--;
+						break;
 				}
 			}
 		}
@@ -608,36 +803,16 @@ int main()
 				SCitem.erase(SCitem.begin() + i);
 				itemCount08--;
 				score += 10;
-				break;
+				continue;
 			}
 			Collider scItemCollider = SCitem[i].GetCollider();
 			for (int k = 0; k < walls.size(); k++)
 			{
 				if (walls[k].GetCollider().CheckCollision(scItemCollider, 0.0f))
 				{
-					SCitem.erase(SCitem.begin() + i);
-					itemCount08--;
-					break;
-				}
-			}
-		}
-		for (size_t i = 0; i < SHitem.size(); i++)
-		{
-			if (SHitem[i].GetCollider().CheckCollision(isaacBodyCollision, 0.0f))
-			{
-				SHitem.erase(SHitem.begin() + i);
-				itemCount09--;
-				score += 10;
-				break;
-			}
-			Collider shItemCollider = SHitem[i].GetCollider();
-			for (int k = 0; k < walls.size(); k++)
-			{
-				if (walls[k].GetCollider().CheckCollision(shItemCollider, 0.0f))
-				{
-					SHitem.erase(SHitem.begin() + i);
-					itemCount09--;
-					break;
+						SCitem.erase(SCitem.begin() + i);
+						itemCount08--;
+						break;
 				}
 			}
 		}
@@ -648,7 +823,7 @@ int main()
 				SSBitem.erase(SSBitem.begin() + i);
 				itemCount10--;
 				score *= 2;
-				break;
+				continue;
 			}
 			Collider ssbItemCollider = SSBitem[i].GetCollider();
 			for (int k = 0; k < walls.size(); k++)
@@ -672,15 +847,55 @@ int main()
 			k = HP.size() - 1;
 			gameState = 9;
 		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
+		{
+			gameState = 4;
+		}
 		for (int i = 0; i < walls.size(); i++)
 		{
 			walls[i].GetCollider().CheckCollision(isaacBodyCollision, 1.0f);
 		}
+		int rate = difficultyRate / 60;
 		for (auto& wall : walls)
 			wall.Draw(window);
 		playerBody.Update(deltaTime);
 		tear.Update(deltaTime, playerBody.GetPosition(), sf::Vector2f(25.0f, 25.0f), sf::Mouse::getPosition(window));
-		window.draw(map01);
+		if(rate%4==0)
+		{
+			if (roomSummonState == 0)
+			{
+				summon.play();
+				roomSummonState++;
+			}
+			window.draw(map01);
+		}
+		else if (rate % 4 == 1)
+		{	
+			if (roomSummonState == 1)
+			{
+				summon.play();
+				roomSummonState++;
+			}
+			window.draw(Map02);
+		}
+		else if (rate % 4 == 2)
+		{
+			if (roomSummonState == 2)
+			{
+				summon.play();
+				roomSummonState++;
+			}
+			window.draw(Map03);
+		}
+		else if (rate % 4 == 3)
+		{
+			if (roomSummonState == 3)
+			{
+				summon.play();
+				roomSummonState=0;
+			}
+			window.draw(Map04);
+		}
 		if (timing >= 2)
 		{
 			timing=dmgCheck.restart().asSeconds();
@@ -697,12 +912,9 @@ int main()
 		}
 		for (size_t i = 0; i < wizobGroub.size(); i++)
 		{
-			if(i!=0)
-			{
 				wizobGroub[i].enemyUpdate(deltaTime, playerBody.GetPosition());
 				wizobGroub[i].Draw(window);
-			}
-		}
+		}		
 		for (size_t i = 0; i < bullets.size(); i++)
 		{
 			bullets[i].Draw(window);
@@ -732,52 +944,117 @@ int main()
 			{
 					SPitem[i].Draw(window);
 			}
-			for (size_t i = 0; i < SCitem.size(); i++)
+			for (size_t i = 0; i < SSBitem.size(); i++)
 			{
-				if(i!=0)
 					SSBitem[i].Draw(window);
 			}
+			for (size_t i = 0; i < SCitem.size(); i++)
+			{
+				SCitem[i].Draw(window);
+			}
+			
+			difficultRateText.setString(std::to_string(rate));
+			scoreText.setString(std::to_string(score));
+			window.draw(scoreDisplay);
+			window.draw(scoreText);
+			window.draw(difficultText);
+			window.draw(difficultRateText);
 			window.display();
 		}
 		if (gameState == 3)
 		{
+			sort(userScore.begin(), userScore.end());
 			window.clear();
+			showHighScore(window.getSize().x / 2,20, "LEADERBOARD", window, &font,72);
+			for (size_t i = 5; i >= 1; i--)
+			{
+				showHighScore(window.getSize().x *2/ 6, 120+(50*(5-i)), userScore[i].second.c_str(), window, &font,40);
+				showHighScore(window.getSize().x*4 / 6, 120 + (50 *(5- i)), std::to_string(userScore[i].first), window, &font,40);
+			}
+			showHighScore(210, window.getSize().y-50, "Press ESC to go back . . .", window, &font, 32);
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
+			{
+				gameState = 0;
+			}
+			window.display();
+		}
+		if(gameState == 4)
+		{
+			pauseButton.Update(sf::Vector2f(sf::Mouse::getPosition(window)));
+			
+			if (pauseButton.getSelect()==0 && sf::Mouse::isButtonPressed(sf::Mouse::Left))
+			{
+				gameState = 2;
+			}
+			else if (pauseButton.getSelect()==1 && sf::Mouse::isButtonPressed(sf::Mouse::Left))
+			{
+				gameState = 9;
+			}
+			window.draw(pauseBG);
+			window.draw(pausemenu);
+			pauseButton.Draw(window);
+			window.display();
+		}
+		if (gameState == 5)
+		{
+			howtoplay.setSize(sf::Vector2f(window.getSize().x, window.getSize().y));
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
+			{
+				gameState = 0;
+			}
+			window.clear();
+			window.draw(howtoplay);
+			showHighScore(210, window.getSize().y - 50, "Press ESC to go back . . .", window, &font, 32);
 			window.display();
 		}
 		if (gameState == 9)
 		{
-			userScore[0].second = nameInput.getText();
-			userScore[0].first = score;
-			
-
-			for (size_t i = 0; i < wizobGroub.size(); i++)
+			musicState = 0;
+			if (wizobGroub.size() != 0)
 			{
-				if(i!=0)
-				wizobGroub.erase(wizobGroub.begin() + i);
+				wizobGroub.erase(wizobGroub.begin(), wizobGroub.end());
 			}
+			difficultyRate = 0;
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
 			{
+				userScore.erase(userScore.begin(), userScore.end());
+				scoreFile = fopen("./Score.txt", "r");
+				for (int i = 0; i < 5; i++)
+				{
+					fscanf(scoreFile, "%s", &playerName);
+					name[i] = playerName;
+					fscanf(scoreFile, "%d", &playerScore[i]);
+					userScore.push_back(make_pair(playerScore[i], name[i]));
+				}
+				fclose(scoreFile);
+				userScore[0].second = nameInput.getText();
+				userScore[0].first = score;
+				userScore.push_back(make_pair(playerScore[0], name[0]));
+				sort(userScore.begin(), userScore.end());
 				
+
+				fopen("./Score.txt", "w");
+				for (size_t i = 5; i >= 1; i--)
+				{
+					strcpy(playerName, userScore[i].second.c_str());
+					fprintf(scoreFile, "%s %d\n", playerName, userScore[i].first);
+				}
+				fclose(scoreFile);
+
 				gameState = 0;
 			}
-			sort(userScore.begin(), userScore.end());
-			fopen("Score.txt", "w");
-			for (size_t i = 5; i >= 1; i--)
-			{
-				strcpy(playerName, userScore[i].second.c_str());
-				fprintf(scoreFile, "%s %d\n", playerName, userScore[i].first);
-			}
-			fclose(scoreFile);
-
 			window.clear();
-			showHighScore(10, 10, "SCORE", window, &font);
-			showHighScore(10, 40, nameInput.getText(), window, &font);
-			showHighScore(10, 70, std::to_string(score), window, &font);
+			forgotten.setPosition(sf::Vector2f(window.getSize().x / 2, window.getSize().y *2/ 3));
+			forgotten.setOrigin(sf::Vector2f(forgotten.getSize().x / 2, forgotten.getSize().y / 2));
+			window.draw(forgotten);
+			showHighScore(window.getSize().x/2, window.getSize().y *1/ 5, "SCORE", window, &font, 108);
+			showHighScore(window.getSize().x / 2, window.getSize().y * 2 / 5, nameInput.getText(), window, &font, 32);
+			showHighScore(window.getSize().x / 2, (window.getSize().y * 2 / 5)+30, std::to_string(score), window, &font, 32);
+			showHighScore(window.getSize().x -250, window.getSize().y-50, "Press Enter to continue . . .", window, &font, 32);
 			window.display();
-
 		}
-	}//πÕ° loop while window open ‚«È¬¬¬¬ ‰ÕÈß—Ëßß
-	
+		
+	}//πÕ° loop while window open ‚«È¬¬¬¬ ‰ÕÈß—Ëß
 	return 0;
 }
 
@@ -789,13 +1066,14 @@ bool randomItemSpwanRate(int dropRate)
 	default: return false;
 	}
 }
-void showHighScore(int x, int y, std::string word, sf::RenderWindow& window, sf::Font* font)
+void showHighScore(int x, int y, std::string word, sf::RenderWindow& window, sf::Font* font,int size)
 {
 	sf::Text text;
 	text.setFont(*font);
-	text.setPosition(x, y);
+	text.setPosition(sf::Vector2f(x, y));
 	text.setString(word);
-	text.setCharacterSize(32);
+	text.setCharacterSize(size);
+	text.setOrigin(text.getLocalBounds().width / 2, text.getLocalBounds().height / 2);
 	window.draw(text);
 }
 
